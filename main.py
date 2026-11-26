@@ -25,6 +25,12 @@ BUILD-BRIEF — judge criteria, in the brief's own order (RULES.txt):
 
 Deterministic: a fixed string, standard library only, no network, no clock,
 no randomness — two runs write byte-identical output.
+
+REVISION (2026-11-26): the self-check gate in main() now also requires the
+entry to equal its own stripped form and to end with exactly one terminal
+period, so a stray space or a doubled full stop can never reach the judge;
+the entry text itself is unchanged, because the rehearsal/vase escalation
+already lands the freshest idea in the field.
 """
 
 from pathlib import Path
@@ -43,6 +49,9 @@ def main() -> None:
     assert 1 <= len(ENTRY) <= 200, f"entry is {len(ENTRY)} chars, must be 1-200"
     assert "\n" not in ENTRY, "entry must be a single line"
     assert ENTRY.strip(), "entry must not be only whitespace"
+    assert ENTRY == ENTRY.strip(), "entry must have no leading/trailing whitespace"
+    assert ENTRY.endswith(".") and not ENTRY.endswith(".."), \
+        "entry must end with exactly one terminal period"
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(ENTRY + "\n", encoding="utf-8")
 
